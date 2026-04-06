@@ -49,7 +49,7 @@ export default function VotePage() {
     })
 
     if (voteError) {
-      setError('something went wrong. try again?')
+      setError(voteError.message || JSON.stringify(voteError))
       setSubmitting(false)
       return
     }
