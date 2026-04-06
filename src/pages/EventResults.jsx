@@ -66,8 +66,8 @@ export default function EventResults() {
   }
 
   const voters = participants.filter((p) => !p.is_organizer && p.vote !== null)
-  const yesVotes = voters.filter((p) => p.vote === 'yes').length
-  const noVotes = voters.filter((p) => p.vote === 'no').length
+  const yesVotes = voters.filter((p) => p.vote === 'in').length
+  const noVotes = voters.filter((p) => p.vote === 'out').length
   const total = voters.length
   const verdict = total > 0 ? (noVotes > yesVotes ? 'cancelled' : 'on') : null
 
@@ -256,11 +256,11 @@ export default function EventResults() {
                     fontSize: '0.75rem',
                     padding: '0.2rem 0.6rem',
                     borderRadius: '4px',
-                    background: p.vote === 'yes' ? '#1a3035' : '#2a1515',
-                    color: p.vote === 'yes' ? 'var(--blue)' : '#ff6b6b',
+                    background: p.vote === 'in' ? '#1a3035' : '#2a1515',
+                    color: p.vote === 'in' ? 'var(--blue)' : '#ff6b6b',
                   }}
                 >
-                  {p.vote === 'yes' ? "i'll be there" : 'want to cancel'}
+                  {p.vote === 'in' ? "i'll be there" : 'want to cancel'}
                 </span>
               </div>
             ))}

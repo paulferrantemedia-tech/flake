@@ -9,7 +9,7 @@ export default function VotePage() {
   const [notFound, setNotFound] = useState(false)
   const [name, setName] = useState('')
   const [submitting, setSubmitting] = useState(false)
-  const [voted, setVoted] = useState(null) // 'yes' | 'no'
+  const [voted, setVoted] = useState(null) // 'in' | 'out'
   const [error, setError] = useState(null)
 
   useEffect(() => {
@@ -49,7 +49,7 @@ export default function VotePage() {
     })
 
     if (voteError) {
-      setError(voteError.message || JSON.stringify(voteError))
+      setError('something went wrong. try again?')
       setSubmitting(false)
       return
     }
@@ -103,10 +103,10 @@ export default function VotePage() {
         }}
       >
         <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>
-          {voted === 'yes' ? '🎉' : '🛋️'}
+          {voted === 'in' ? '🎉' : '🛋️'}
         </div>
         <h1 style={{ color: 'var(--blue)', fontSize: '2rem', marginBottom: '0.75rem' }}>
-          {voted === 'yes' ? "you're in!" : 'vote logged.'}
+          {voted === 'in' ? "you're in!" : 'vote logged.'}
         </h1>
         <p
           style={{
@@ -116,7 +116,7 @@ export default function VotePage() {
             fontSize: '0.95rem',
           }}
         >
-          {voted === 'yes'
+          {voted === 'in'
             ? `see you at ${event.name}. please don't flake.`
             : `your vote to cancel is in. fingers crossed your friends are couch-people too.`}
         </p>
@@ -224,7 +224,7 @@ export default function VotePage() {
       {/* Vote buttons */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         <button
-          onClick={() => handleVote('yes')}
+          onClick={() => handleVote('in')}
           disabled={submitting}
           style={{
             background: 'var(--blue)',
@@ -243,7 +243,7 @@ export default function VotePage() {
         </button>
 
         <button
-          onClick={() => handleVote('no')}
+          onClick={() => handleVote('out')}
           disabled={submitting}
           style={{
             background: '#161616',
