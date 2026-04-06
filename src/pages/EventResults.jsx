@@ -43,7 +43,7 @@ export default function EventResults() {
   }
 
   function copyLink() {
-    navigator.clipboard.writeText(`https://flakeapp.pro/vote/${event.token}`)
+    navigator.clipboard.writeText(`${window.location.origin}/vote/${event.token}`)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }

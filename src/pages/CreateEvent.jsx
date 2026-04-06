@@ -47,7 +47,7 @@ export default function CreateEvent() {
       user_id: user.id,
     })
 
-    setShareLink(`https://flakeapp.pro/vote/${event.token}`)
+    setShareLink(`${window.location.origin}/vote/${event.token}`)
     setLoading(false)
   }
 
