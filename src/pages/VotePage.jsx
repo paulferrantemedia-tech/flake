@@ -8,6 +8,7 @@ export default function VotePage() {
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
   const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [voted, setVoted] = useState(null) // 'in' | 'out'
   const [error, setError] = useState(null)
@@ -39,10 +40,40 @@ export default function VotePage() {
     setSubmitting(true)
     setError(null)
 
+    const trimmedEmail = email.trim().toLowerCase()
+
+    // If they provided an email, check if they already voted (upsert by email+event)
+    if (trimmedEmail) {
+      const { data: existing } = await supabase
+        .from('participants')
+        .select('id')
+        .eq('event_id', event.id)
+        .eq('email', trimmedEmail)
+        .maybeSingle()
+
+      if (existing) {
+        // Update their existing vote
+        const { error: updateError } = await supabase
+          .from('participants')
+          .update({ vote: voteValue, name: name.trim() })
+          .eq('id', existing.id)
+
+        if (updateError) {
+          setError('something went wrong. try again?')
+          setSubmitting(false)
+          return
+        }
+        setVoted(voteValue)
+        setSubmitting(false)
+        return
+      }
+    }
+
+    // No email or no existing record — insert fresh
     const { error: voteError } = await supabase.from('participants').insert({
       event_id: event.id,
       name: name.trim(),
-      email: null,
+      email: trimmedEmail || null,
       vote: voteValue,
       is_organizer: false,
       user_id: null,
@@ -120,6 +151,11 @@ export default function VotePage() {
             ? `see you at ${event.name}. please don't flake.`
             : `your vote to cancel is in. fingers crossed your friends are couch-people too.`}
         </p>
+        {email.trim() && voted === 'in' && (
+          <p style={{ color: '#444', fontFamily: 'Poppins', fontSize: '0.8rem', marginTop: '1.5rem' }}>
+            we'll nudge you a couple days before in case you change your mind. 😈
+          </p>
+        )}
       </div>
     )
   }
@@ -177,7 +213,7 @@ export default function VotePage() {
       </p>
 
       {/* Name input */}
-      <div style={{ marginBottom: '1.5rem' }}>
+      <div style={{ marginBottom: '1rem' }}>
         <label
           style={{
             display: 'block',
@@ -204,6 +240,41 @@ export default function VotePage() {
             fontFamily: 'Poppins',
             fontSize: '1rem',
             outline: 'none',
+            boxSizing: 'border-box',
+          }}
+        />
+      </div>
+
+      {/* Email input (optional) */}
+      <div style={{ marginBottom: '1.5rem' }}>
+        <label
+          style={{
+            display: 'block',
+            fontFamily: 'Poppins',
+            fontSize: '0.8rem',
+            color: '#666',
+            marginBottom: '0.4rem',
+          }}
+        >
+          your email{' '}
+          <span style={{ color: '#3a3a3a', fontSize: '0.75rem' }}>(optional — we'll remind you before the event)</span>
+        </label>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="you@example.com"
+          style={{
+            width: '100%',
+            background: '#161616',
+            border: '1px solid #242424',
+            borderRadius: '8px',
+            padding: '0.8rem 1rem',
+            color: 'var(--white)',
+            fontFamily: 'Poppins',
+            fontSize: '1rem',
+            outline: 'none',
+            boxSizing: 'border-box',
           }}
         />
       </div>
